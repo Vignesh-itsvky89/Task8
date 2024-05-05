@@ -1,3 +1,14 @@
+Task: 
+Using MySQL, design a database whose name is IMDB. Create proper MySQL tables, Primary key, Foreign key, add data into MySQL tables and do the following as given below  
+1) 1. Movie should have multiple media (video or image) 
+2) 2. Movie can belong to multiple genre
+3) 3. Movie can have multiple review and Review can belongs to a user
+4) 4. Artist can have multiple skills
+5) 5. Artist can perform multiple role in a single film  
+
+*************************************************************************************************
+
+
 Enter password: ********
 
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
