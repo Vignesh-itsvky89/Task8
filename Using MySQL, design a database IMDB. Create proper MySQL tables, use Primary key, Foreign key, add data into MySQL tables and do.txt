@@ -1,0 +1,291 @@
+Enter password: ********
+
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 3
+Server version: 11.3.2-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> CREATE DATABASE IMDB
+    -> ;
+ERROR 1007 (HY000): Can't create database 'imdb'; database exists
+MariaDB [(none)]> use IMDB
+Database changed
+
+MariaDB [IMDB]> CREATE TABLE Movie (
+    ->   movie_id INT PRIMARY KEY,
+    ->   movie_title varchar(255) NOT NULL,
+    ->   movie_duration INT,
+    ->   movie_lang varchar(255) NOT NULL,
+    ->   movie_release_date date NOT NULL,
+    ->   movie_release_country varchar(20) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.529 sec)
+
+MariaDB [IMDB]> INSERT INTO Movie (movie_id, movie_title , movie_duration, movie_lang, movie_release_date, movie_release_country) VALUES
+    -> (901, ' Vertigo            ', 128, ' English  ', '1958-08-24', ' UK'),
+    -> (902, ' The Innocents      ', 100, ' English  ', '1962-02-19', ' SW'),
+    -> (903, ' Lawrence of Arabia ', 216, ' English  ', '1962-12-11', ' UK'),
+    -> (904, ' The Deer Hunter    ', 183, ' English  ', '1979-03-08', ' UK'),
+    -> (905, ' Amadeus            ', 160, ' English  ', '1985-01-07', ' UK')
+    -> ;
+Query OK, 5 rows affected (0.507 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [IMDB]> select * from Movie
+    -> ;
++----------+----------------------+----------------+------------+--------------------+-----------------------+
+| movie_id | movie_title          | movie_duration | movie_lang | movie_release_date | movie_release_country |
++----------+----------------------+----------------+------------+--------------------+-----------------------+
+|      901 |  Vertigo             |            128 |  English   | 1958-08-24         |  UK                   |
+|      902 |  The Innocents       |            100 |  English   | 1962-02-19         |  SW                   |
+|      903 |  Lawrence of Arabia  |            216 |  English   | 1962-12-11         |  UK                   |
+|      904 |  The Deer Hunter     |            183 |  English   | 1979-03-08         |  UK                   |
+|      905 |  Amadeus             |            160 |  English   | 1985-01-07         |  UK                   |
++----------+----------------------+----------------+------------+--------------------+-----------------------+
+5 rows in set (0.231 sec)
+
+MariaDB [IMDB]> CREATE TABLE Media (
+    ->     media_id INT PRIMARY KEY,
+    ->     movie_id INT,
+    ->     media_type ENUM ('image', 'video'),
+    ->     file_path VARCHAR(255),
+    ->     FOREIGN KEY (movie_id) REFERENCES Movie(movie_id)
+    -> );
+Query OK, 0 rows affected (0.061 sec)
+
+MariaDB [IMDB]> INSERT INTO Media (media_id, movie_id, media_type, file_path) VALUES
+    -> (1, 901, 'video', 'D:\Automation study\Python Programming\Task files\Task 8\SampleVideo_1280x720_2mb.mp4'),
+    -> (2, 902, 'video', 'D:\Automation study\Python Programming\Task files\Task 8\SampleVideo_1280x720_2mb.mkv'),
+    -> (3, 903, 'video', 'D:\Automation study\Python Programming\Task files\Task 8\SampleVideo_1280x720_1mb.mp4'),
+    -> (4, 904, 'image', 'D:\Automation study\Python Programming\Task files\Task 8\SampleJPGImage_100kbmb.jpg'),
+    -> (5, 905, 'image', 'D:\Automation study\Python Programming\Task files\Task 8\SampleJPGImage_30mbmb.jpg')
+    -> ;
+Query OK, 5 rows affected (0.004 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [IMDB]> select * from Media
+    -> ;
++----------+----------+------------+----------------------------------------------------------------------------------+
+| media_id | movie_id | media_type | file_path                                                                        |
++----------+----------+------------+----------------------------------------------------------------------------------+
+|        1 |      901 | video      | D:Automation studyPython ProgrammingTask filesTask 8SampleVideo_1280x720_2mb.mp4 |
+|        2 |      902 | video      | D:Automation studyPython ProgrammingTask filesTask 8SampleVideo_1280x720_2mb.mkv |
+|        3 |      903 | video      | D:Automation studyPython ProgrammingTask filesTask 8SampleVideo_1280x720_1mb.mp4 |
+|        4 |      904 | image      | D:Automation studyPython ProgrammingTask filesTask 8SampleJPGImage_100kbmb.jpg   |
+|        5 |      905 | image      | D:Automation studyPython ProgrammingTask filesTask 8SampleJPGImage_30mbmb.jpg    |
++----------+----------+------------+----------------------------------------------------------------------------------+
+5 rows in set (0.001 sec)
+
+MariaDB [IMDB]> CREATE TABLE IF NOT EXISTS genres (
+    ->   gen_id int(5) NOT NULL,
+    ->   movie_id INT,
+    ->   gen_title varchar(20) NOT NULL,
+    ->   PRIMARY KEY (gen_id),
+    ->   FOREIGN KEY (movie_id) REFERENCES Movie(movie_id)
+    -> );
+Query OK, 0 rows affected (0.044 sec)
+
+MariaDB [IMDB]> INSERT INTO genres (gen_id,movie_id, gen_title) VALUES
+    -> (1001, 901, ' Action'),
+    -> (1002, 902, ' Adventure'),
+    -> (1003, 903, ' Animation'),
+    -> (1004, 904, ' Biography'),
+    -> (1005, 905, ' Comedy')
+    -> ;
+Query OK, 5 rows affected (0.006 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [IMDB]> select * from genres
+    -> ;
++--------+----------+------------+
+| gen_id | movie_id | gen_title  |
++--------+----------+------------+
+|   1001 |      901 |  Action    |
+|   1002 |      902 |  Adventure |
+|   1003 |      903 |  Animation |
+|   1004 |      904 |  Biography |
+|   1005 |      905 |  Comedy    |
++--------+----------+------------+
+5 rows in set (0.007 sec)
+
+MariaDB [IMDB]> CREATE TABLE IF NOT EXISTS Review (
+    ->   movie_id INT,
+    ->   Review_id int(5) NOT NULL,
+    ->   Review_stars decimal(4,0) NOT NULL,
+    ->   num_of_ratings int(10) NOT NULL,
+    ->   PRIMARY KEY (Review_id),
+    ->   FOREIGN KEY (movie_id) REFERENCES Movie(movie_id)
+    -> );
+Query OK, 0 rows affected (0.030 sec)
+
+MariaDB [IMDB]> INSERT INTO Review (movie_id, Review_id, Review_stars, num_of_ratings) VALUES
+    -> (901, 9001, '10', 263575),
+    -> (902, 9002, '6', 20207),
+    -> (903, 9003, '9', 202778),
+    -> (904, 9005, '8', 484746),
+    -> (905, 9006, '7', 100);
+Query OK, 5 rows affected (0.006 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [IMDB]> SELECT * FROM Review;
++----------+-----------+--------------+----------------+
+| movie_id | Review_id | Review_stars | num_of_ratings |
++----------+-----------+--------------+----------------+
+|      901 |      9001 |           10 |         263575 |
+|      902 |      9002 |            6 |          20207 |
+|      903 |      9003 |            9 |         202778 |
+|      904 |      9005 |            8 |         484746 |
+|      905 |      9006 |            7 |            100 |
++----------+-----------+--------------+----------------+
+5 rows in set (0.000 sec)
+
+MariaDB [IMDB]> CREATE TABLE IF NOT EXISTS Artist (
+    ->   Artist_id int(4) NOT NULL,
+    ->   Artist_name varchar(10) NOT NULL,
+    ->   Artist_skills varchar(10) NOT NULL,
+    ->   Artist_gender varchar(6) NOT NULL,
+    ->   PRIMARY KEY (Artist_id)
+    -> );
+Query OK, 0 rows affected (0.023 sec)
+
+MariaDB [IMDB]> CREATE TABLE IF NOT EXISTS Artist (
+    ->   Artist_id int(4) NOT NULL,
+    ->   Artist_name varchar(10) NOT NULL,
+    ->   Artist_skills varchar(255) NOT NULL,
+    ->   Artist_gender varchar(6) NOT NULL,
+    ->   PRIMARY KEY (Artist_id)
+    -> );
+Query OK, 0 rows affected, 1 warning (0.012 sec)
+
+MariaDB [IMDB]> INSERT INTO Artist (Artist_id, Artist_name, Artist_skills, Artist_gender) VALUES
+    -> (101, ' James    ', 'Comedian', ' M'),
+    -> (102, ' Deborah  ', ' Dancer', ' F'),
+    -> (103, ' Peter    ', ' Lyricist', ' M'),
+    -> (104, ' Robert   ', ' Hero', ' M'),
+    -> (105, ' F. Murray','Writer', ' M');
+Query OK, 5 rows affected (0.004 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [IMDB]> select * from Artist
+    -> ;
++-----------+-------------+---------------+---------------+
+| Artist_id | Artist_name | Artist_skills | Artist_gender |
++-----------+-------------+---------------+---------------+
+|       101 |  James      | Comedian      |  M            |
+|       102 |  Deborah    |  Dancer       |  F            |
+|       103 |  Peter      |  Lyricist     |  M            |
+|       104 |  Robert     |  Hero         |  M            |
+|       105 |  F. Murray  | Writer        |  M            |
++-----------+-------------+---------------+---------------+
+5 rows in set (0.000 sec)
+
+MariaDB [IMDB]> CREATE TABLE IF NOT EXISTS Artist_Role (
+    ->   Artist_id int(4) NOT NULL,
+    ->   movie_id int(4) NOT NULL,
+    ->   Role varchar(20) NOT NULL,
+    ->   FOREIGN KEY (movie_id) REFERENCES Movie(movie_id),
+    ->   FOREIGN KEY (Artist_id) REFERENCES Artist(Artist_id)
+    -> );
+Query OK, 0 rows affected (0.052 sec)
+
+MariaDB [IMDB]> INSERT INTO Artist_Role (Artist_id, movie_id, role) VALUES
+    -> (101, 901, ' John Scottie Fergus'),
+    -> (102, 902, ' Miss Giddens'),
+    -> (103, 903, ' T.E. Lawrence'),
+    -> (104, 904, ' Michael'),
+    -> (105, 905, ' Antonio Salieri');
+Query OK, 5 rows affected (0.006 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [IMDB]> select * from Artist_role
+    -> ;
++-----------+----------+----------------------+
+| Artist_id | movie_id | Role                 |
++-----------+----------+----------------------+
+|       101 |      901 |  John Scottie Fergus |
+|       102 |      902 |  Miss Giddens        |
+|       103 |      903 |  T.E. Lawrence       |
+|       104 |      904 |  Michael             |
+|       105 |      905 |  Antonio Salieri     |
++-----------+----------+----------------------+
+5 rows in set (0.001 sec)
+
+MariaDB [IMDB]> use IMDB
+Database changed
+MariaDB [IMDB]> Select * from Movie
+    -> ;
++----------+----------------------+----------------+------------+--------------------+-----------------------+
+| movie_id | movie_title          | movie_duration | movie_lang | movie_release_date | movie_release_country |
++----------+----------------------+----------------+------------+--------------------+-----------------------+
+|      901 |  Vertigo             |            128 |  English   | 1958-08-24         |  UK                   |
+|      902 |  The Innocents       |            100 |  English   | 1962-02-19         |  SW                   |
+|      903 |  Lawrence of Arabia  |            216 |  English   | 1962-12-11         |  UK                   |
+|      904 |  The Deer Hunter     |            183 |  English   | 1979-03-08         |  UK                   |
+|      905 |  Amadeus             |            160 |  English   | 1985-01-07         |  UK                   |
++----------+----------------------+----------------+------------+--------------------+-----------------------+
+5 rows in set (0.002 sec)
+
+MariaDB [IMDB]> select * from Media;
++----------+----------+------------+----------------------------------------------------------------------------------+
+| media_id | movie_id | media_type | file_path                                                                        |
++----------+----------+------------+----------------------------------------------------------------------------------+
+|        1 |      901 | video      | D:Automation studyPython ProgrammingTask filesTask 8SampleVideo_1280x720_2mb.mp4 |
+|        2 |      902 | video      | D:Automation studyPython ProgrammingTask filesTask 8SampleVideo_1280x720_2mb.mkv |
+|        3 |      903 | video      | D:Automation studyPython ProgrammingTask filesTask 8SampleVideo_1280x720_1mb.mp4 |
+|        4 |      904 | image      | D:Automation studyPython ProgrammingTask filesTask 8SampleJPGImage_100kbmb.jpg   |
+|        5 |      905 | image      | D:Automation studyPython ProgrammingTask filesTask 8SampleJPGImage_30mbmb.jpg    |
++----------+----------+------------+----------------------------------------------------------------------------------+
+5 rows in set (0.001 sec)
+
+MariaDB [IMDB]>  select * from genres;
++--------+----------+------------+
+| gen_id | movie_id | gen_title  |
++--------+----------+------------+
+|   1001 |      901 |  Action    |
+|   1002 |      902 |  Adventure |
+|   1003 |      903 |  Animation |
+|   1004 |      904 |  Biography |
+|   1005 |      905 |  Comedy    |
++--------+----------+------------+
+5 rows in set (0.001 sec)
+
+MariaDB [IMDB]> SELECT * FROM Review;
++----------+-----------+--------------+----------------+
+| movie_id | Review_id | Review_stars | num_of_ratings |
++----------+-----------+--------------+----------------+
+|      901 |      9001 |           10 |         263575 |
+|      902 |      9002 |            6 |          20207 |
+|      903 |      9003 |            9 |         202778 |
+|      904 |      9005 |            8 |         484746 |
+|      905 |      9006 |            7 |            100 |
++----------+-----------+--------------+----------------+
+5 rows in set (0.001 sec)
+
+MariaDB [IMDB]>  select * from Artist;
++-----------+-------------+---------------+---------------+
+| Artist_id | Artist_name | Artist_skills | Artist_gender |
++-----------+-------------+---------------+---------------+
+|       101 |  James      | Comedian      |  M            |
+|       102 |  Deborah    |  Dancer       |  F            |
+|       103 |  Peter      |  Lyricist     |  M            |
+|       104 |  Robert     |  Hero         |  M            |
+|       105 |  F. Murray  | Writer        |  M            |
++-----------+-------------+---------------+---------------+
+5 rows in set (0.000 sec)
+
+MariaDB [IMDB]>  select * from Artist_role;
++-----------+----------+----------------------+
+| Artist_id | movie_id | Role                 |
++-----------+----------+----------------------+
+|       101 |      901 |  John Scottie Fergus |
+|       102 |      902 |  Miss Giddens        |
+|       103 |      903 |  T.E. Lawrence       |
+|       104 |      904 |  Michael             |
+|       105 |      905 |  Antonio Salieri     |
++-----------+----------+----------------------+
+5 rows in set (0.001 sec)
+
+MariaDB [IMDB]>
